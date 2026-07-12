@@ -21,6 +21,36 @@
     <priority>0.7</priority>
   </url>
   <url>
+    <loc>https://ideotest.example/articulo-izquierda-derecha.html</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://ideotest.example/articulo-libertario-autoritario.html</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://ideotest.example/articulo-nacion-globo.html</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://ideotest.example/articulo-eje-territorial-espana.html</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://ideotest.example/articulo-cupo-vasco-concierto-economico.html</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://ideotest.example/articulo-origen-partidos-espanoles.html</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  <url>
     <loc>https://ideotest.example/contacto.html</loc>
     <changefreq>yearly</changefreq>
     <priority>0.3</priority>

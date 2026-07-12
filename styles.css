@@ -694,6 +694,17 @@ body{ display:flex; flex-direction:column; min-height:100vh; }
   border-radius: 3px;
   margin-bottom: 10px;
 }
+a.article-card{
+  transition: border-color 0.15s ease, transform 0.1s ease;
+}
+a.article-card:hover{
+  border-color: var(--ink-2);
+}
+a.article-card .article-badge{
+  color: #2c6e49;
+  background: rgba(44,110,73,0.14);
+}
+a.article-card h3{ text-decoration: underline; text-decoration-color: rgba(27,42,74,0.25); }
 .article-card h3{
   font-family:'Space Grotesk', sans-serif;
   font-weight: 600;
