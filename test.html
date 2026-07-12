@@ -1,0 +1,661 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Haz el test | IdeoTest — Descubre tu ideología política</title>
+<meta name="description" content="Responde 48 afirmaciones y descubre tu posición en 5 ejes políticos, tu ideología más cercana y el partido español más afín a tu perfil.">
+<link rel="canonical" href="https://ideotest.example/test.html">
+<link rel="stylesheet" href="styles.css">
+<!-- Google AdSense (activar tras la aprobación de la cuenta):
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-XXXXXXXXXXXXXXXX" crossorigin="anonymous"></script>
+-->
+</head>
+<body>
+
+<header class="site-header">
+  <div class="header-inner">
+    <a href="index.html" class="brand-mark"><span class="dot"></span>IdeoTest</a>
+    <nav class="site-nav">
+      <a href="index.html">Inicio</a>
+      <a href="resultados.html">Cómo se interpreta</a>
+      <a href="articulos.html">Artículos</a>
+      <a href="contacto.html">Contacto</a>
+      <a href="test.html" class="active nav-cta">Hacer el test</a>
+    </nav>
+  </div>
+</header>
+
+<div id="app"></div>
+
+<footer class="site-footer">
+  <div class="footer-inner">
+    <div class="copy">© 2026 IdeoTest — Test de ideología política</div>
+    <div class="footer-links">
+      <a href="privacidad.html">Privacidad</a>
+      <a href="cookies.html">Cookies</a>
+      <a href="aviso-legal.html">Aviso legal</a>
+      <a href="contacto.html">Contacto</a>
+    </div>
+  </div>
+</footer>
+
+<script>
+/* ============ DATA ============ */
+// sign: +1 = agreeing pushes toward RIGHT (economic) or AUTHORITARIAN (social)
+//       -1 = agreeing pushes toward LEFT (economic) or LIBERTARIAN (social)
+// axis: eco (izquierda -1 / derecha +1) · soc (libertario -1 / autoritario +1)
+//       nat (globalista -1 / soberanista +1) · trad (progresista -1 / tradicionalista +1)
+const QUESTIONS = [
+  // ECONÓMICO
+  { axis:'eco', sign:-1, text:"El Estado debería garantizar vivienda, sanidad y educación universales de calidad, aunque signifique subir bastante los impuestos a las rentas altas." },
+  { axis:'eco', sign:+1, text:"Bajar impuestos a empresas y rentas altas estimula la economía y crea más empleo que subirlos." },
+  { axis:'eco', sign:+1, text:"Los servicios públicos esenciales (agua, luz, transporte) funcionan mejor gestionados por privados que por el Estado." },
+  { axis:'eco', sign:-1, text:"El salario mínimo debería subir de forma notable, aunque algunas pequeñas empresas tengan dificultades para adaptarse." },
+  { axis:'eco', sign:+1, text:"El libre mercado, con mínima intervención del Estado, es el mejor mecanismo para generar prosperidad." },
+  { axis:'eco', sign:-1, text:"Los sindicatos son necesarios para proteger a los trabajadores frente a abusos empresariales." },
+  { axis:'eco', sign:-1, text:"Una renta básica universal financiada con impuestos merece la pena, aunque sea costosa para las arcas públicas." },
+  { axis:'eco', sign:-1, text:"La desigualdad económica es un problema que el Estado debe corregir activamente mediante impuestos y ayudas." },
+  { axis:'eco', sign:+1, text:"Las empresas deberían tener libertad para contratar y despedir con una regulación laboral mínima." },
+  { axis:'eco', sign:+1, text:"Reducir el tamaño del Estado y el gasto público es clave para tener una economía sana." },
+
+  // SOCIAL (libertario ↔ autoritario)
+  { axis:'soc', sign:-1, text:"El consumo de drogas actualmente ilegales debería ser una decisión personal, no del Estado." },
+  { axis:'soc', sign:+1, text:"Las penas para delitos graves deberían ser bastante más duras, aunque implique limitar ciertos derechos de los acusados." },
+  { axis:'soc', sign:-1, text:"La libertad de expresión debe protegerse incluso cuando el discurso resulta ofensivo para algunos colectivos." },
+  { axis:'soc', sign:+1, text:"El Estado debería poder vigilar comunicaciones privadas si eso ayuda a prevenir amenazas como el terrorismo." },
+  { axis:'soc', sign:-1, text:"El aborto y la eutanasia deberían ser decisiones personales protegidas por ley, sin restricciones estatales." },
+  { axis:'soc', sign:-1, text:"Cada persona debería poder vivir como quiera mientras no dañe a terceros, sin que el Estado imponga una moral concreta." },
+  { axis:'soc', sign:-1, text:"Portar armas debería ser un derecho individual con pocas restricciones por parte del Estado." },
+  { axis:'soc', sign:+1, text:"Censurar contenidos considerados peligrosos o de odio está justificado aunque limite algo la libertad de expresión." },
+  { axis:'soc', sign:+1, text:"Un carné de identidad biométrico y un registro estatal detallado de los ciudadanos son razonables por motivos de seguridad." },
+  { axis:'soc', sign:+1, text:"El matrimonio y la familia tradicional deberían tener un estatus social distinto al de otras formas de convivencia." },
+
+  // NACIÓN ↔ GLOBO (soberanismo vs globalismo)
+  { axis:'nat', sign:+1, text:"La soberanía nacional debe prevalecer sobre acuerdos y organismos supranacionales (UE, ONU, tratados internacionales)." },
+  { axis:'nat', sign:-1, text:"La cooperación internacional y las instituciones globales son necesarias para resolver problemas que ningún país puede afrontar solo." },
+  { axis:'nat', sign:+1, text:"Hay que endurecer el control de la inmigración para proteger la seguridad y la identidad nacional." },
+  { axis:'nat', sign:-1, text:"La libre circulación de personas entre países debería facilitarse, no restringirse." },
+  { axis:'nat', sign:+1, text:"Un país debe priorizar a sus propios ciudadanos y empresas frente a acuerdos comerciales internacionales." },
+  { axis:'nat', sign:-1, text:"El libre comercio internacional beneficia más de lo que perjudica, aunque cierre algunas industrias locales." },
+  { axis:'nat', sign:+1, text:"Es preferible producir y consumir bienes nacionales aunque resulten más caros que los importados." },
+  { axis:'nat', sign:-1, text:"Ceder parte de la soberanía nacional a cambio de mayor integración y estabilidad regional (como en la UE) es un buen trato." },
+  { axis:'nat', sign:+1, text:"La identidad y la cultura nacional deben protegerse activamente frente a la influencia extranjera." },
+  { axis:'nat', sign:-1, text:"Problemas globales como el cambio climático, las pandemias o las migraciones exigen soluciones coordinadas por encima de las fronteras." },
+
+  // TRADICIÓN ↔ PROGRESO
+  { axis:'trad', sign:+1, text:"Las tradiciones y costumbres heredadas deben conservarse aunque la sociedad cambie a su alrededor." },
+  { axis:'trad', sign:-1, text:"Es positivo cuestionar y actualizar las normas sociales heredadas cuando ya no representan a la sociedad actual." },
+  { axis:'trad', sign:+1, text:"Los roles de género tradicionales aportan cierta estabilidad y no deberían diluirse por completo." },
+  { axis:'trad', sign:-1, text:"La sociedad avanza cuando se cuestionan abiertamente las jerarquías y roles heredados del pasado." },
+  { axis:'trad', sign:+1, text:"Los cambios sociales deben ser graduales y respetuosos con lo ya establecido, no impuestos de golpe." },
+  { axis:'trad', sign:-1, text:"Las instituciones (educativas, religiosas, familiares) deberían adaptarse rápido a los nuevos valores sociales." },
+  { axis:'trad', sign:+1, text:"El respeto a las jerarquías familiares, religiosas y sociales es la base de una sociedad ordenada." },
+  { axis:'trad', sign:-1, text:"El lenguaje y las normas sociales deben evolucionar para incluir nuevas identidades y realidades." },
+  { axis:'trad', sign:+1, text:"Se debería enseñar y transmitir con orgullo la historia y los valores nacionales o culturales propios, tal y como son." },
+  { axis:'trad', sign:-1, text:"La experimentación social y los nuevos modelos de convivencia enriquecen a la sociedad." },
+
+  // TERRITORIAL (centralismo ↔ nacionalismo periférico / independentismo)
+  { axis:'terr', sign:+1, text:"España debería avanzar hacia un modelo más centralizado, con menos competencias para las comunidades autónomas." },
+  { axis:'terr', sign:-1, text:"Cataluña, el País Vasco, Galicia u otros territorios históricos deberían poder decidir en referéndum si quieren independizarse." },
+  { axis:'terr', sign:+1, text:"El castellano debería tener un papel prioritario frente a las demás lenguas cooficiales en la administración y la educación." },
+  { axis:'terr', sign:-1, text:"Las lenguas propias (catalán, euskera, gallego...) deberían tener el mismo peso o más que el castellano en sus territorios." },
+  { axis:'terr', sign:+1, text:"Un referéndum de autodeterminación en cualquier territorio de España sería un ataque a la unidad nacional y no debería permitirse." },
+  { axis:'terr', sign:-1, text:"El derecho a decidir sobre el futuro político de un territorio está por encima de la legalidad vigente si su población lo reclama democráticamente." },
+  { axis:'terr', sign:+1, text:"El sistema de financiación autonómica debería ser igual para todos los territorios, sin regímenes especiales como el concierto vasco o el cupo." },
+  { axis:'terr', sign:-1, text:"Cada territorio debería poder gestionar y recaudar sus propios impuestos con la máxima autonomía posible, como ocurre en el País Vasco o Navarra." },
+];
+
+const LIKERT = [
+  { label: "Muy de acuerdo", value: 2 },
+  { label: "De acuerdo", value: 1 },
+  { label: "Neutral", value: 0 },
+  { label: "En desacuerdo", value: -1 },
+  { label: "Muy en desacuerdo", value: -2 },
+];
+
+/* ============ STATE ============ */
+let state = {
+  screen: 'intro', // intro | question | results
+  qIndex: 0,
+  answers: {}, // qIndex -> likert value
+};
+
+const app = document.getElementById('app');
+
+/* ============ RENDER ROUTER ============ */
+function render(){
+  if(state.screen === 'intro') renderIntro();
+  else if(state.screen === 'question') renderQuestion();
+  else renderResults();
+}
+
+/* ============ INTRO ============ */
+function renderIntro(){
+  app.innerHTML = `
+    <div class="intro-card fade-in">
+      <div class="q-eyebrow">Test de ideología política</div>
+      <h1 class="intro-title">Rellena la papeleta. Descubre tu mapa.</h1>
+      <p class="intro-body">
+        ${QUESTIONS.length} afirmaciones repartidas en <strong>5 ejes</strong>: economía (izquierda-derecha),
+        sociedad (libertario-autoritario), nación (soberanismo-globalismo), valores (tradición-progreso)
+        y territorio (centralismo-nacionalismo periférico). Al final verás también el partido español
+        —estatal o nacionalista/regional— más cercano a tu perfil.
+        Nada de esto se guarda en ningún sitio: se calcula aquí mismo, en tu navegador.
+      </p>
+      <div class="intro-meta">
+        <div class="meta-chip">⏱ ~6 min</div>
+        <div class="meta-chip">🔒 anónimo</div>
+        <div class="meta-chip">📊 5 ejes</div>
+      </div>
+      <button class="btn-start" onclick="startTest()">Empezar el test →</button>
+    </div>
+  `;
+}
+
+function startTest(){
+  state.screen = 'question';
+  state.qIndex = 0;
+  render();
+}
+
+/* ============ QUESTION ============ */
+function renderQuestion(){
+  const idx = state.qIndex;
+  const q = QUESTIONS[idx];
+  const total = QUESTIONS.length;
+  const answered = Object.keys(state.answers).length;
+  const pct = Math.round((answered/total)*100);
+
+  const circumference = 2 * Math.PI * 18;
+  const offset = circumference * (1 - answered/total);
+
+  const selectedVal = state.answers[idx];
+
+  app.innerHTML = `
+    <div class="stamp-wrap">
+      <svg class="stamp-ring" viewBox="0 0 46 46">
+        <circle class="track" cx="23" cy="23" r="18" fill="none" stroke-width="4"></circle>
+        <circle class="fill" id="stamp-fill" cx="23" cy="23" r="18" fill="none" stroke-width="4"
+          stroke-dasharray="${circumference}" stroke-dashoffset="${offset}"
+          stroke-linecap="round" transform="rotate(-90 23 23)"></circle>
+        <text x="23" y="27" text-anchor="middle" class="stamp-num" id="stamp-num">${pct}</text>
+      </svg>
+      <div class="progress-track"><div class="progress-fill" id="progress-fill" style="width:${(idx/total)*100}%"></div></div>
+      <div class="progress-label">${idx+1}/${total}</div>
+    </div>
+
+    <div class="ballot-card fade-in" id="ballot-card">
+      <div class="q-eyebrow">Afirmación ${idx+1}</div>
+      <div class="q-text">"${q.text}"</div>
+      <div class="options" id="options">
+        ${LIKERT.map((opt, i) => `
+          <button class="opt ${selectedVal===opt.value ? 'selected':''}" data-value="${opt.value}" onclick="selectAnswer(${opt.value})">
+            <span class="opt-box"></span>
+            <span>${opt.label}</span>
+            <span class="stamp-mark">OK</span>
+          </button>
+        `).join('')}
+      </div>
+      <div class="q-footer">
+        <button class="btn-ghost" onclick="prevQuestion()" ${idx===0 ? 'disabled':''}>← anterior</button>
+        <button class="btn-ghost" onclick="skipQuestion()">saltar (neutral) →</button>
+      </div>
+    </div>
+  `;
+}
+
+function selectAnswer(value){
+  state.answers[state.qIndex] = value;
+
+  // Feedback inmediato tocando solo lo necesario del DOM, sin reconstruir
+  // toda la tarjeta (eso es lo que causaba el pequeño parón al pulsar).
+  const optionsEl = document.getElementById('options');
+  if(optionsEl){
+    optionsEl.querySelectorAll('.opt').forEach(btn => {
+      btn.classList.toggle('selected', parseFloat(btn.dataset.value) === value);
+    });
+  }
+
+  const total = QUESTIONS.length;
+  const answered = Object.keys(state.answers).length;
+  const pct = Math.round((answered/total)*100);
+  const circumference = 2 * Math.PI * 18;
+  const offset = circumference * (1 - answered/total);
+
+  const fillEl = document.getElementById('stamp-fill');
+  if(fillEl) fillEl.setAttribute('stroke-dashoffset', offset);
+  const numEl = document.getElementById('stamp-num');
+  if(numEl) numEl.textContent = pct;
+  const progFillEl = document.getElementById('progress-fill');
+  if(progFillEl) progFillEl.style.width = `${((state.qIndex+1)/total)*100}%`;
+
+  setTimeout(()=>{
+    if(state.qIndex < QUESTIONS.length - 1){
+      state.qIndex++;
+      render();
+    } else {
+      computeResults();
+    }
+  }, 320);
+}
+
+function skipQuestion(){
+  state.answers[state.qIndex] = 0;
+  if(state.qIndex < QUESTIONS.length - 1){
+    state.qIndex++;
+    render();
+  } else {
+    computeResults();
+  }
+}
+
+function prevQuestion(){
+  if(state.qIndex > 0){
+    state.qIndex--;
+    render();
+  }
+}
+
+/* ============ SCORING ============ */
+let RESULTS = null;
+
+function computeResults(){
+  const sums = { eco:0, soc:0, nat:0, trad:0, terr:0 };
+  const counts = { eco:0, soc:0, nat:0, trad:0, terr:0 };
+  QUESTIONS.forEach((q, i) => {
+    const val = state.answers[i] ?? 0;
+    sums[q.axis] += q.sign * val;
+    counts[q.axis]++;
+  });
+  // normalize each axis to -100..100
+  const score = (axis) => Math.round((sums[axis] / (counts[axis]*2)) * 100);
+
+  RESULTS = { eco: score('eco'), soc: score('soc'), nat: score('nat'), trad: score('trad'), terr: score('terr') };
+  state.screen = 'results';
+  render();
+}
+
+// Personalidades con posturas públicas conocidas cercanas a cada perfil.
+// Son referencias orientativas basadas en posiciones públicas documentadas,
+// no juicios de valor ni afirmaciones de coincidencia total con el usuario.
+const FIGURES = {
+  'left-lib':   { pol: ["Bernie Sanders", "Yanis Varoufakis"], biz: ["Yvon Chouinard (Patagonia)"] },
+  'left-auth':  { pol: ["Clement Attlee", "Jean-Luc Mélenchon"], biz: [] },
+  'right-lib':  { pol: ["Ron Paul", "Javier Milei"], biz: ["Elon Musk", "Peter Thiel"] },
+  'right-auth': { pol: ["Margaret Thatcher", "Viktor Orbán"], biz: [] },
+  'center':     { pol: ["Angela Merkel", "Emmanuel Macron"], biz: ["Michael Bloomberg"] },
+  'left-mod':   { pol: ["Pedro Sánchez", "Joe Biden"], biz: [] },
+  'right-mod':  { pol: ["Mariano Rajoy"], biz: ["Ray Dalio"] },
+  'lib-mod':    { pol: ["Justin Trudeau"], biz: ["Richard Branson"] },
+  'auth-mod':   { pol: ["Recep Tayyip Erdoğan"], biz: [] },
+  'soberanista':    { pol: ["Marine Le Pen"], biz: [] },
+  'globalista':     { pol: ["Kofi Annan"], biz: ["George Soros"] },
+  'tradicionalista':{ pol: ["Giorgia Meloni"], biz: [] },
+  'progresista':    { pol: ["Alexandria Ocasio-Cortez"], biz: [] },
+};
+
+function mergeFigures(baseKey, tags){
+  const base = FIGURES[baseKey] || { pol:[], biz:[] };
+  let pol = [...base.pol];
+  let biz = [...base.biz];
+  tags.forEach(t => {
+    const extra = FIGURES[t.word];
+    if(extra){
+      extra.pol.forEach(p => { if(!pol.includes(p)) pol.push(p); });
+      extra.biz.forEach(b => { if(!biz.includes(b)) biz.push(b); });
+    }
+  });
+  return { pol: pol.slice(0,4), biz: biz.slice(0,3) };
+}
+
+// Coordenadas aproximadas (-100..100) de partidos españoles en 2026,
+// basadas en sus posiciones generales conocidas. Es una simplificación orientativa,
+// no una medición exacta ni una recomendación de voto. Los partidos regionalistas
+// se marcan con su ámbito territorial habitual.
+const PARTIES_ES = [
+  { name: "PSOE",      eco:-25, soc:-20, nat:-10, trad:-25, terr:+15 },
+  { name: "PP",        eco:+35, soc:+15, nat:+25, trad:+30, terr:+55 },
+  { name: "Vox",       eco:+25, soc:+60, nat:+75, trad:+70, terr:+85 },
+  { name: "Sumar",     eco:-65, soc:-55, nat:-30, trad:-55, terr:-15 },
+  { name: "Podemos",   eco:-75, soc:-45, nat:-35, trad:-50, terr:-20 },
+  { name: "ERC",       eco:-45, soc:-30, nat:-45, trad:-25, terr:-80, region: "Cataluña" },
+  { name: "Junts",     eco:+10, soc:-10, nat:-30, trad:0,   terr:-70, region: "Cataluña" },
+  { name: "PNV",       eco:+10, soc:0,   nat:-15, trad:+10, terr:-50, region: "País Vasco" },
+  { name: "EH Bildu",  eco:-60, soc:-35, nat:-45, trad:-30, terr:-85, region: "País Vasco y Navarra" },
+  { name: "BNG",       eco:-50, soc:-25, nat:-30, trad:-25, terr:-55, region: "Galicia" },
+  { name: "Coalición Canaria", eco:+10, soc:0, nat:0, trad:0, terr:-30, region: "Canarias" },
+];
+
+const AXIS_META = {
+  eco:  { label: "el eje económico", neg: "izquierda", pos: "derecha" },
+  soc:  { label: "el eje social", neg: "libertario", pos: "autoritario" },
+  nat:  { label: "el eje nación-globo", neg: "globalista", pos: "soberanista" },
+  trad: { label: "el eje tradición-progreso", neg: "progresista", pos: "tradicionalista" },
+  terr: { label: "el eje territorial", neg: "nacionalista/independentista", pos: "centralista" },
+};
+
+function matchSpanishParty(eco, soc, nat, trad, terr){
+  const axes = ['eco','soc','nat','trad','terr'];
+  const scores = { eco, soc, nat, trad, terr };
+  // Los partidos regionales/nacionalistas solo entran en juego si hay una señal
+  // territorial real (nacionalista/independentista); si no, se compara solo
+  // entre partidos de ámbito estatal para evitar falsos positivos regionales.
+  const REGIONAL_THRESHOLD = -25;
+  const candidates = terr <= REGIONAL_THRESHOLD ? PARTIES_ES : PARTIES_ES.filter(p => !p.region);
+  let best = null, bestDist = Infinity;
+  candidates.forEach(p => {
+    const d = Math.sqrt(axes.reduce((acc,ax)=> acc + Math.pow(scores[ax]-p[ax],2), 0));
+    if(d < bestDist){ bestDist = d; best = p; }
+  });
+  // ejes donde más se parece (menor diferencia absoluta)
+  const diffs = axes.map(ax => ({ axis: ax, diff: Math.abs(scores[ax]-best[ax]) }));
+  diffs.sort((a,b)=> a.diff - b.diff);
+  const reasons = diffs.slice(0,2).map(d => {
+    const meta = AXIS_META[d.axis];
+    const userSide = scores[d.axis] < 0 ? meta.neg : meta.pos;
+    return `en ${meta.label} ambos os situáis del lado ${userSide}`;
+  });
+  return { name: best.name, region: best.region || null, reasons };
+}
+
+function poleSuffix(nat, trad){
+  const tags = [];
+  if(Math.abs(nat) > 20) tags.push({ axis:'nat', word: nat>0 ? 'soberanista' : 'globalista', strength: Math.abs(nat) });
+  if(Math.abs(trad) > 20) tags.push({ axis:'trad', word: trad>0 ? 'tradicionalista' : 'progresista', strength: Math.abs(trad) });
+  return tags;
+}
+
+function natTradParagraph(nat, trad){
+  let parts = [];
+  if(Math.abs(nat) <= 15){
+    parts.push("En el eje nación-globo te mantienes bastante equilibrado: valoras tanto la cooperación internacional como la soberanía nacional según el tema.");
+  } else if(nat > 15){
+    parts.push(`Con un ${nat}% hacia el polo soberanista, priorizas la soberanía nacional, el control fronterizo y la identidad propia por encima de la integración supranacional.`);
+  } else {
+    parts.push(`Con un ${Math.abs(nat)}% hacia el polo globalista, das más peso a la cooperación internacional, la apertura de fronteras y las instituciones supranacionales que a la soberanía nacional estricta.`);
+  }
+  if(Math.abs(trad) <= 15){
+    parts.push("En tradición vs progreso tampoco muestras un bloque cerrado: aceptas cambios sociales en unos terrenos y prefieres conservar costumbres en otros.");
+  } else if(trad > 15){
+    parts.push(`Con un ${trad}% hacia el polo tradicionalista, valoras conservar costumbres, jerarquías y formas de vida heredadas frente a los cambios acelerados.`);
+  } else {
+    parts.push(`Con un ${Math.abs(trad)}% hacia el polo progresista, prefieres cuestionar y actualizar normas y jerarquías heredadas antes que conservarlas por costumbre.`);
+  }
+  return parts.join(" ");
+}
+
+function classify(eco, soc, nat, trad){
+  const ecoStrength = Math.abs(eco);
+  const socStrength = Math.abs(soc);
+  const intensity = (ecoStrength + socStrength) / 2;
+
+  let level = "moderado";
+  if(intensity > 60) level = "marcado";
+  else if(intensity < 20) level = "centrado";
+
+  let name, nuance, currents, explanation, figuresKey;
+
+  const isLeft = eco < -10, isRight = eco > 10;
+  const isLib = soc < -10, isAuth = soc > 10;
+
+  if(!isLeft && !isRight && !isLib && !isAuth){
+    name = "Centrista pragmático";
+    nuance = "Tus respuestas se reparten de forma bastante equilibrada entre ambos polos en los dos ejes. Sueles valorar cada propuesta según el caso concreto más que según un bloque ideológico cerrado.";
+    currents = ["Centrismo", "Tercera vía", "Pragmatismo político"];
+    explanation = "No es indecisión: es que tiendes a sopesar cada medida por separado en vez de partir de un paquete ideológico predefinido.";
+    figuresKey = 'center';
+  } else if(isLeft && isLib){
+    name = level==="marcado" ? "Izquierda libertaria" : "Progresista con acento libertario";
+    nuance = "Defiendes un Estado activo en lo económico (redistribución, servicios públicos fuertes) combinado con máxima libertad individual en lo social y cultural.";
+    currents = ["Socialdemocracia", "Socialismo libertario", "Progresismo social"];
+    explanation = "Este perfil es habitual entre quienes priorizan tanto la igualdad material como la autonomía personal, viendo ambas como parte del mismo proyecto de libertad real.";
+    figuresKey = 'left-lib';
+  } else if(isLeft && isAuth){
+    name = level==="marcado" ? "Izquierda autoritaria" : "Estatismo social con mano firme";
+    nuance = "Apuestas por un Estado fuerte tanto en economía (redistribución, control) como en la organización social, con menos margen para la disidencia individual frente al proyecto colectivo.";
+    currents = ["Socialismo de Estado", "Estatismo social"];
+    explanation = "Sueles priorizar la cohesión y el proyecto colectivo por encima de la autonomía individual cuando ambos entran en conflicto.";
+    figuresKey = 'left-auth';
+  } else if(isRight && isLib){
+    name = level==="marcado" ? "Libertario de derechas" : "Liberal clásico";
+    nuance = "Confías en el mercado y en la mínima intervención estatal, y esa misma lógica de 'menos Estado' la trasladas también al terreno social y de libertades individuales.";
+    currents = ["Liberalismo clásico", "Libertarianismo", "Minarquismo"];
+    explanation = "Para ti, el Estado debería tener un papel reducido tanto en tu bolsillo como en tus decisiones personales.";
+    figuresKey = 'right-lib';
+  } else if(isRight && isAuth){
+    name = level==="marcado" ? "Conservador autoritario" : "Conservadurismo con enfoque de orden";
+    nuance = "Favoreces la libertad económica y el mercado, pero combinada con un papel fuerte del Estado en seguridad, tradición y cohesión social.";
+    currents = ["Conservadurismo", "Nacional-conservadurismo"];
+    explanation = "Este perfil combina 'mano libre' en economía con 'mano firme' en lo social, algo muy presente en tradiciones conservadoras clásicas.";
+    figuresKey = 'right-auth';
+  } else {
+    // near an axis but not clearly quadrant (close to 0 on one axis)
+    if(isLeft){
+      name = "Izquierda moderada";
+      nuance = "Tu eje social está bastante equilibrado, pero en lo económico te inclinas claramente hacia más intervención estatal y redistribución.";
+      currents = ["Socialdemocracia moderada"];
+      explanation = "Tiendes a evaluar lo social caso por caso, pero en economía tienes una postura más definida.";
+      figuresKey = 'left-mod';
+    } else if(isRight){
+      name = "Derecha moderada";
+      nuance = "En lo social te mueves con flexibilidad, pero en economía prefieres más mercado y menos Estado.";
+      currents = ["Liberalismo económico moderado"];
+      explanation = "Tu núcleo ideológico está más definido en el terreno económico que en el social.";
+      figuresKey = 'right-mod';
+    } else if(isLib){
+      name = "Libertario transversal";
+      nuance = "En economía tus respuestas están repartidas, pero en libertades individuales y sociales te posicionas claramente del lado de la mínima intervención estatal.";
+      currents = ["Liberalismo social", "Libertarismo cultural"];
+      explanation = "La autonomía personal es tu principio más firme, por encima del debate económico.";
+      figuresKey = 'lib-mod';
+    } else {
+      name = "Autoritario transversal";
+      nuance = "En economía no muestras un bloque claro, pero en lo social prefieres un Estado con mayor capacidad de regular la conducta y la vida colectiva.";
+      currents = ["Autoritarismo social", "Conservadurismo de orden"];
+      explanation = "El orden y la cohesión social pesan más en tu perfil que el debate económico izquierda-derecha.";
+      figuresKey = 'auth-mod';
+    }
+  }
+
+  // matices de nación/tradición añadidos al nombre base
+  const tags = poleSuffix(nat, trad);
+  if(tags.length){
+    name = name + " · " + tags.map(t => t.word).join(" y ");
+  }
+  tags.forEach(t => {
+    if(t.axis === 'nat'){
+      currents.push(t.word === 'soberanista' ? "Soberanismo / Nacionalismo" : "Globalismo / Internacionalismo");
+    } else {
+      currents.push(t.word === 'tradicionalista' ? "Tradicionalismo cultural" : "Progresismo cultural");
+    }
+  });
+
+  const figures = mergeFigures(figuresKey, tags);
+
+  return { name, nuance, currents, explanation, level, figures };
+}
+
+/* ============ RESULTS RENDER ============ */
+function renderResults(){
+  const { eco, soc, nat, trad, terr } = RESULTS;
+  const profile = classify(eco, soc, nat, trad);
+  const spanishParty = matchSpanishParty(eco, soc, nat, trad, terr);
+
+  const ecoPct = Math.round(((eco + 100) / 200) * 100); // 0=far left,100=far right
+  const socPct = Math.round(((soc + 100) / 200) * 100); // 0=far libertarian,100=far authoritarian
+  const natPct = Math.round(((nat + 100) / 200) * 100); // 0=far globalista,100=far soberanista
+  const tradPct = Math.round(((trad + 100) / 200) * 100); // 0=far progresista,100=far tradicionalista
+  const terrPct = Math.round(((terr + 100) / 200) * 100); // 0=far nacionalista/independentista,100=far centralista
+
+  const ecoLabel = eco === 0 ? "Centro económico" : (eco < 0 ? `${Math.abs(eco)}% Izquierda económica` : `${eco}% Derecha económica`);
+  const socLabel = soc === 0 ? "Centro social" : (soc < 0 ? `${Math.abs(soc)}% Libertario social` : `${soc}% Autoritario social`);
+  const natLabel = nat === 0 ? "Centro nación-globo" : (nat < 0 ? `${Math.abs(nat)}% Globalista` : `${nat}% Soberanista`);
+  const tradLabel = trad === 0 ? "Centro tradición-progreso" : (trad < 0 ? `${Math.abs(trad)}% Progresista` : `${trad}% Tradicionalista`);
+  const terrLabel = terr === 0 ? "Centro territorial" : (terr < 0 ? `${Math.abs(terr)}% Nacionalista/independentista` : `${terr}% Centralista`);
+
+  // compass 1: económico × social (viewBox 0..220)
+  const cx = 20 + (ecoPct/100)*180;
+  const cy = 20 + (socPct/100)*180; // top = libertario(0), bottom = autoritario(100) — matches soc sign(+auth)
+
+  // compass 2: nación × tradición
+  const cx2 = 20 + (natPct/100)*180; // izq = globalista, der = soberanista
+  const cy2 = 20 + (tradPct/100)*180; // arriba = progresista, abajo = tradicionalista
+
+  app.innerHTML = `
+    <div class="results-wrap fade-in">
+      <div class="results-eyebrow">Papeleta sellada</div>
+      <div class="results-title">Tu mapa ideológico</div>
+      <div class="results-sub">Basado en tus ${QUESTIONS.length} respuestas — nivel de definición: ${profile.level}</div>
+
+      <div class="compass-pair">
+        <div class="compass-box">
+          <svg width="200" height="200" viewBox="0 0 220 220">
+            <rect x="20" y="20" width="180" height="180" fill="#fff" stroke="var(--line)" stroke-width="1"></rect>
+            <line x1="110" y1="20" x2="110" y2="200" stroke="rgba(22,32,46,0.15)" stroke-width="1"></line>
+            <line x1="20" y1="110" x2="200" y2="110" stroke="rgba(22,32,46,0.15)" stroke-width="1"></line>
+            <text x="20" y="14" class="compass-labels">LIBERTARIO</text>
+            <text x="150" y="14" class="compass-labels">LIBERTARIO</text>
+            <text x="20" y="212" class="compass-labels">AUTORITARIO</text>
+            <text x="150" y="212" class="compass-labels">AUTORITARIO</text>
+            <text x="22" y="112" class="compass-labels">IZQ.</text>
+            <text x="182" y="112" class="compass-labels">DER.</text>
+            <circle cx="${cx}" cy="${cy}" r="7" fill="var(--red)" stroke="#fff" stroke-width="2.5"></circle>
+          </svg>
+          <div class="compass-caption">Económico × Social</div>
+        </div>
+        <div class="compass-box">
+          <svg width="200" height="200" viewBox="0 0 220 220">
+            <rect x="20" y="20" width="180" height="180" fill="#fff" stroke="var(--line)" stroke-width="1"></rect>
+            <line x1="110" y1="20" x2="110" y2="200" stroke="rgba(22,32,46,0.15)" stroke-width="1"></line>
+            <line x1="20" y1="110" x2="200" y2="110" stroke="rgba(22,32,46,0.15)" stroke-width="1"></line>
+            <text x="20" y="14" class="compass-labels">PROGRESISTA</text>
+            <text x="145" y="14" class="compass-labels">PROGRESISTA</text>
+            <text x="14" y="212" class="compass-labels">TRADICIONAL</text>
+            <text x="140" y="212" class="compass-labels">TRADICIONAL</text>
+            <text x="22" y="112" class="compass-labels">GLOBO</text>
+            <text x="170" y="112" class="compass-labels">NACIÓN</text>
+            <circle cx="${cx2}" cy="${cy2}" r="7" fill="var(--blue)" stroke="#fff" stroke-width="2.5"></circle>
+          </svg>
+          <div class="compass-caption">Nación × Tradición</div>
+        </div>
+      </div>
+
+      <div class="axis-bars">
+        <div class="axis-row">
+          <div class="axis-title"><span>Eje económico</span><span>${ecoLabel}</span></div>
+          <div class="axis-track">
+            <div class="axis-marker" style="left:${ecoPct}%"></div>
+          </div>
+          <div class="axis-ends"><span>Izquierda</span><span>Derecha</span></div>
+        </div>
+        <div class="axis-row">
+          <div class="axis-title"><span>Eje social</span><span>${socLabel}</span></div>
+          <div class="axis-track">
+            <div class="axis-marker" style="left:${socPct}%"></div>
+          </div>
+          <div class="axis-ends"><span>Libertario</span><span>Autoritario</span></div>
+        </div>
+        <div class="axis-row">
+          <div class="axis-title"><span>Eje nación-globo</span><span>${natLabel}</span></div>
+          <div class="axis-track">
+            <div class="axis-marker" style="left:${natPct}%"></div>
+          </div>
+          <div class="axis-ends"><span>Globalista</span><span>Soberanista</span></div>
+        </div>
+        <div class="axis-row">
+          <div class="axis-title"><span>Eje tradición-progreso</span><span>${tradLabel}</span></div>
+          <div class="axis-track">
+            <div class="axis-marker" style="left:${tradPct}%"></div>
+          </div>
+          <div class="axis-ends"><span>Progresista</span><span>Tradicionalista</span></div>
+        </div>
+        <div class="axis-row">
+          <div class="axis-title"><span>Eje territorial</span><span>${terrLabel}</span></div>
+          <div class="axis-track">
+            <div class="axis-marker" style="left:${terrPct}%"></div>
+          </div>
+          <div class="axis-ends"><span>Nacionalista / independentista</span><span>Centralista</span></div>
+        </div>
+      </div>
+
+      <div class="ideology-card">
+        <div class="ideology-label">Ideología más cercana</div>
+        <div class="ideology-name">${profile.name}</div>
+        <div class="ideology-nuance">${profile.nuance}</div>
+      </div>
+
+      <div class="section-block">
+        <div class="section-title">¿Por qué este resultado?</div>
+        <div class="section-body">${profile.explanation}</div>
+      </div>
+
+      <div class="section-block">
+        <div class="section-title">Nación, soberanía y tradición</div>
+        <div class="section-body">${natTradParagraph(nat, trad)}</div>
+      </div>
+
+      <div class="ad-slot"><span class="ad-slot-label">Espacio publicitario</span></div>
+
+      <div class="section-block">
+        <div class="section-title">Partido español más afín</div>
+        <div class="section-body">
+          <div class="ideology-name" style="font-size:19px; color:var(--ink-2); margin-bottom:8px;">${spanishParty.name}${spanishParty.region ? ` <span style="font-size:13px; font-weight:400; color:rgba(22,32,46,0.55);">(ámbito: ${spanishParty.region})</span>` : ''}</div>
+          Es el partido con más cercanía a tu perfil en los 5 ejes: ${spanishParty.reasons.join(" y, sobre todo, ")}.
+          ${spanishParty.region ? `<div style="margin-top:8px;">Ten en cuenta que es un partido de ámbito regional (${spanishParty.region}): si no vives ahí, no podrás votarlo, pero el resultado indica que tu perfil territorial e ideológico se parece al suyo.</div>` : ''}
+          <div style="margin-top:12px; font-size:13px; color:rgba(22,32,46,0.55); font-style:italic;">
+            Aproximación orientativa según las posiciones generales conocidas de cada partido en 2026 (no es una recomendación de voto ni una medición exacta; los programas cambian).
+          </div>
+        </div>
+      </div>
+
+      <div class="section-block">
+        <div class="section-title">Personalidades con posturas cercanas</div>
+        <div class="section-body">
+          ${profile.figures.pol.length ? `<div style="margin-bottom:8px;"><strong>Política:</strong></div>
+          <div class="currents-list" style="margin-bottom:14px;">
+            ${profile.figures.pol.map(p => `<div class="current-chip">${p}</div>`).join('')}
+          </div>` : ''}
+          ${profile.figures.biz.length ? `<div style="margin-bottom:8px;"><strong>Empresa / economía:</strong></div>
+          <div class="currents-list">
+            ${profile.figures.biz.map(p => `<div class="current-chip">${p}</div>`).join('')}
+          </div>` : ''}
+          ${(!profile.figures.pol.length && !profile.figures.biz.length) ? '<em>Tu combinación de respuestas es lo bastante equilibrada como para no tener un referente claro en ningún bloque.</em>' : ''}
+          <div style="margin-top:12px; font-size:13px; color:rgba(22,32,46,0.55); font-style:italic;">
+            Son referencias orientativas por posiciones públicas generales conocidas en estos ejes, no una comparación exacta ni un juicio de valor sobre ti ni sobre ellos.
+          </div>
+        </div>
+      </div>
+
+      <div class="section-block">
+        <div class="section-title">Corrientes relacionadas</div>
+        <div class="currents-list">
+          ${profile.currents.map(c => `<div class="current-chip">${c}</div>`).join('')}
+        </div>
+      </div>
+
+      <div class="section-block">
+        <div class="section-body" style="font-style:italic; color:rgba(22,32,46,0.6);">
+          Recuerda: esto es una fotografía aproximada basada en ${QUESTIONS.length} afirmaciones, no una etiqueta definitiva.
+          Las ideologías reales son mucho más ricas que dos números.
+        </div>
+      </div>
+
+      <div class="results-actions">
+        <button class="btn-secondary" onclick="restartTest()">↺ Repetir test</button>
+      </div>
+    </div>
+  `;
+}
+
+function restartTest(){
+  state = { screen:'intro', qIndex:0, answers:{} };
+  RESULTS = null;
+  render();
+}
+
+/* ============ INIT ============ */
+render();
+</script>
+</body>
+</html>
