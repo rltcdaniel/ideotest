@@ -1,0 +1,14 @@
+# ads.txt para Test Político
+#
+# Este archivo es OBLIGATORIO para que AdSense sirva anuncios sin pérdida de
+# ingresos por fraude/spoofing. Debe estar en la raíz del dominio:
+# https://tu-dominio.com/ads.txt
+#
+# Ahora mismo está vacío de intención porque todavía no tienes tu ID de
+# publisher de AdSense. En cuanto lo tengas (aparece en tu cuenta de AdSense
+# como "pub-XXXXXXXXXXXXXXXX"), descomenta y rellena la siguiente línea:
+#
+# google.com, pub-XXXXXXXXXXXXXXXX, DIRECT, f08c47fec0942fa0
+#
+# El código "f08c47fec0942fa0" es el ID de certificación de Google y es
+# siempre el mismo para todos los publishers; no lo cambies.

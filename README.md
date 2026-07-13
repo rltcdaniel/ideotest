@@ -8,40 +8,49 @@ Sitio estático, sin build ni dependencias: HTML + CSS + JS vanilla. Compatible 
 
 ```
 .
-├── index.html          Home — qué es el test, cómo funciona
-├── test.html            El test interactivo (48 preguntas, 5 ejes)
-├── resultados.html       Guía: cómo interpretar cada eje y el partido afín
-├── articulos.html        Listado de artículos (placeholders "Próximamente")
-├── privacidad.html        Política de privacidad (RGPD / LOPDGDD)
-├── cookies.html           Política de cookies
-├── aviso-legal.html       Aviso legal (LSSI-CE)
-├── contacto.html          Página de contacto
-├── styles.css             Hoja de estilos compartida por todas las páginas
-├── sitemap.xml            Sitemap para Search Console
-├── robots.txt             Reglas para crawlers
-└── CNAME                  (opcional) dominio propio para GitHub Pages
+├── index.html                       Home — qué es el test, cómo funciona
+├── test.html                        El test interactivo (48 preguntas, 5 ejes)
+├── resultados.html                  Guía: cómo interpretar cada eje y el partido afín
+├── articulos.html                   Listado de los 9 artículos (todos publicados)
+├── articulo-*.html                  Los 9 artículos SEO
+├── privacidad.html                  Política de privacidad (RGPD / LOPDGDD)
+├── cookies.html                     Política de cookies
+├── aviso-legal.html                 Aviso legal (LSSI-CE)
+├── contacto.html                    Página de contacto
+├── styles.css                       Hoja de estilos compartida por todas las páginas
+├── cookie-consent.js                Banner de consentimiento de cookies + carga condicional de AdSense
+├── ads.txt                          Placeholder — rellenar con tu ID de AdSense cuando lo tengas
+├── sitemap.xml                      Sitemap para Search Console
+├── robots.txt                       Reglas para crawlers
+└── CNAME                            (opcional) dominio propio para GitHub Pages
 ```
 
 ## Antes de publicar — checklist
 
-Busca `[COMPLETAR` en los archivos `.html` para localizar todo lo pendiente, o usa:
+Busca `[COMPLETAR` o `TODO` en los archivos para localizar todo lo pendiente, o usa:
 
 ```bash
-grep -rn "COMPLETAR\|legal-placeholder\|testpolitico.example\|tudominio.com\|ca-pub-XXXX" *.html
+grep -rn "COMPLETAR\|legal-placeholder\|testpolitico.example\|TODO" *.html *.js *.txt
 ```
 
-Pendiente de rellenar:
+Ya resuelto:
 
-- [ ] **Datos identificativos** (nombre/razón social, NIF, dirección) en `privacidad.html` y `aviso-legal.html` — obligatorios por la LSSI-CE.
-- [ ] **Email de contacto real** en `contacto.html`, `privacidad.html` y `aviso-legal.html`.
+- [x] **Email de contacto real** (`rltc.daniel@gmail.com`) en `contacto.html`, `privacidad.html` y `aviso-legal.html`.
+- [x] **Banner de consentimiento de cookies** funcional (`cookie-consent.js`), con opción de aceptar/rechazar y carga condicional de AdSense.
+- [x] **`ads.txt`** creado como placeholder, listo para rellenar con tu ID de AdSense.
+
+Pendiente:
+
+- [ ] **Nombre y NIF** en `privacidad.html` y `aviso-legal.html` — obligatorios por la LSSI-CE en cuanto la web genere ingresos por publicidad (aunque seas particular, no empresa).
+- [ ] **Domicilio** en `privacidad.html` y `aviso-legal.html` — también obligatorio por la LSSI-CE, y un apartado de correos NO es válido legalmente. Decisión pendiente: usar un domicilio fiscal de gestoría (si te das de alta como autónoma) o asumir el riesgo de no incluirlo (habitual en blogs pequeños, aunque no 100% conforme a la ley). Consulta con una gestoría para la vía definitiva.
 - [ ] **Dominio real**: sustituir `https://testpolitico.example/` por tu dominio final en las etiquetas `canonical`, `og:url`, `sitemap.xml` y `robots.txt`. Con el dominio ya decidido, puedes hacerlo de golpe:
   ```bash
   sed -i '' 's#https://testpolitico.example#https://TU-DOMINIO-REAL#g' *.html sitemap.xml robots.txt
   ```
   (en Linux, quita el `''` después de `-i`).
-- [ ] **ID de publisher de AdSense** (`ca-pub-XXXXXXXXXXXXXXXX`): descomenta el `<script>` de AdSense en el `<head>` de cada página una vez tengas la cuenta aprobada.
-- [ ] **Plataforma de gestión de consentimiento (CMP)** tipo Google Funding Choices, obligatoria si sirves anuncios a usuarios de la UE/EEE. Está anotado como pendiente en `cookies.html`.
-- [ ] Los 9 artículos de `articulos.html` están como "Próximamente" — cuando los redactemos, habrá que crear su HTML y enlazarlos desde ahí.
+- [ ] **ID de publisher de AdSense** (`ca-pub-XXXXXXXXXXXXXXXX`): edita la constante `ADSENSE_CLIENT_ID` al principio de `cookie-consent.js` — es el único sitio donde hace falta ponerlo, se aplica a todas las páginas automáticamente.
+- [ ] **`ads.txt`**: descomenta y rellena la línea con tu ID real de publisher.
+- [ ] **CMP certificado por Google** (Google Funding Choices): una vez aprobada la cuenta de AdSense, ve a "Privacy & messaging" para crear el mensaje de consentimiento GDPR oficial. El banner de `cookie-consent.js` cumple el RGPD general, pero Google exige además este CMP certificado para anuncios personalizados en la UE/Reino Unido. Instrucciones detalladas en los comentarios de `cookie-consent.js`.
 
 ## Desarrollo local
 
