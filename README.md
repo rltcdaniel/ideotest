@@ -20,6 +20,11 @@ Sitio estático, sin build ni dependencias: HTML + CSS + JS vanilla. Compatible 
 ├── styles.css                       Hoja de estilos compartida por todas las páginas
 ├── cookie-consent.js                Banner de consentimiento de cookies + carga condicional de AdSense
 ├── ads.txt                          Placeholder — rellenar con tu ID de AdSense cuando lo tengas
+├── favicon.svg / favicon.ico        Icono del sitio (pestaña del navegador y resultados de Google)
+├── favicon-16.png / favicon-32.png / favicon-48.png / favicon-96.png
+├── apple-touch-icon.png             Icono para iOS al añadir a pantalla de inicio
+├── icon-192.png / icon-512.png      Iconos para PWA / manifest
+├── site.webmanifest                 Manifest con metadatos e iconos
 ├── sitemap.xml                      Sitemap para Search Console
 ├── robots.txt                       Reglas para crawlers
 └── CNAME                            (opcional) dominio propio para GitHub Pages

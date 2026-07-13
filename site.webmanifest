@@ -1,0 +1,13 @@
+{
+  "name": "Test Político",
+  "short_name": "Test Político",
+  "description": "Descubre tu ideología política en 5 ejes y el partido español más afín.",
+  "start_url": "/index.html",
+  "display": "browser",
+  "background_color": "#EDEFE9",
+  "theme_color": "#1B2A4A",
+  "icons": [
+    { "src": "icon-192.png", "sizes": "192x192", "type": "image/png" },
+    { "src": "icon-512.png", "sizes": "512x512", "type": "image/png" }
+  ]
+}
