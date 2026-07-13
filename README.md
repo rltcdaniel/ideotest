@@ -1,4 +1,4 @@
-# IdeoTest
+# Test Político
 
 Test de ideología política en español (5 ejes) con matching de partido más afín, pensado como sitio de nicho monetizable con Google AdSense.
 
@@ -27,16 +27,16 @@ Sitio estático, sin build ni dependencias: HTML + CSS + JS vanilla. Compatible 
 Busca `[COMPLETAR` en los archivos `.html` para localizar todo lo pendiente, o usa:
 
 ```bash
-grep -rn "COMPLETAR\|legal-placeholder\|ideotest.example\|tudominio.com\|ca-pub-XXXX" *.html
+grep -rn "COMPLETAR\|legal-placeholder\|testpolitico.example\|tudominio.com\|ca-pub-XXXX" *.html
 ```
 
 Pendiente de rellenar:
 
 - [ ] **Datos identificativos** (nombre/razón social, NIF, dirección) en `privacidad.html` y `aviso-legal.html` — obligatorios por la LSSI-CE.
 - [ ] **Email de contacto real** en `contacto.html`, `privacidad.html` y `aviso-legal.html`.
-- [ ] **Dominio real**: sustituir `https://ideotest.example/` por tu dominio final en las etiquetas `canonical`, `og:url`, `sitemap.xml` y `robots.txt`. Con el dominio ya decidido, puedes hacerlo de golpe:
+- [ ] **Dominio real**: sustituir `https://testpolitico.example/` por tu dominio final en las etiquetas `canonical`, `og:url`, `sitemap.xml` y `robots.txt`. Con el dominio ya decidido, puedes hacerlo de golpe:
   ```bash
-  sed -i '' 's#https://ideotest.example#https://TU-DOMINIO-REAL#g' *.html sitemap.xml robots.txt
+  sed -i '' 's#https://testpolitico.example#https://TU-DOMINIO-REAL#g' *.html sitemap.xml robots.txt
   ```
   (en Linux, quita el `''` después de `-i`).
 - [ ] **ID de publisher de AdSense** (`ca-pub-XXXXXXXXXXXXXXXX`): descomenta el `<script>` de AdSense en el `<head>` de cada página una vez tengas la cuenta aprobada.

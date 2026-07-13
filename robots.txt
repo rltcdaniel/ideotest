@@ -4,4 +4,4 @@ Disallow: /privacidad.html
 Disallow: /cookies.html
 Disallow: /aviso-legal.html
 
-Sitemap: https://ideotest.example/sitemap.xml
+Sitemap: https://testpolitico.example/sitemap.xml
