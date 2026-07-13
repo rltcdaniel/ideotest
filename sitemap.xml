@@ -51,6 +51,21 @@
     <priority>0.6</priority>
   </url>
   <url>
+    <loc>https://testpolitico.example/articulo-tradicion-progreso.html</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://testpolitico.example/articulo-partidos-nacionalistas-diferencias.html</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://testpolitico.example/articulo-centro-politico.html</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  <url>
     <loc>https://testpolitico.example/contacto.html</loc>
     <changefreq>yearly</changefreq>
     <priority>0.3</priority>

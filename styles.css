@@ -157,7 +157,7 @@
     font-family: 'Space Grotesk', sans-serif;
     font-weight: 600;
     font-size: 16px;
-    color: var(--paper);
+    color: #FFFFFF;
     background: var(--ink-2);
     border: none;
     padding: 15px 26px;
@@ -375,7 +375,7 @@
 
   .ideology-card{
     background: var(--ink-2);
-    color: var(--paper);
+    color: #FFFFFF;
     border-radius: 4px;
     padding: 22px 24px;
     margin-bottom: 20px;
@@ -398,7 +398,7 @@
   .ideology-nuance{
     font-size: 14.5px;
     line-height: 1.55;
-    color: rgba(237,239,233,0.88);
+    color: rgba(255,255,255,0.88);
   }
 
   .section-block{
@@ -518,7 +518,7 @@ body{ display:flex; flex-direction:column; min-height:100vh; }
 }
 .nav-cta{
   background: var(--ink-2) !important;
-  color: var(--paper) !important;
+  color: #FFFFFF !important;
   padding: 8px 16px !important;
   border-radius: 3px;
   border-bottom: none !important;
@@ -571,7 +571,7 @@ body{ display:flex; flex-direction:column; min-height:100vh; }
   font-family:'Space Grotesk', sans-serif;
   font-weight: 600;
   font-size: 16px;
-  color: var(--paper);
+  color: #FFFFFF;
   background: var(--ink-2);
   border: none;
   padding: 15px 30px;
